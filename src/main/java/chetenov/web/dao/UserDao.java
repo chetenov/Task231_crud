@@ -1,8 +1,6 @@
 package chetenov.web.dao;
 
 import chetenov.web.entity.User;
-import org.springframework.dao.support.DaoSupport;
-
 import java.util.List;
 
 public interface UserDao {

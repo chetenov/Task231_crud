@@ -25,10 +25,10 @@ public class PersistenceJPAConfig {
     private UserService userService;
 
     @Bean
-    public void fillDataBase(){
-        User user1 = new User("Иван", "Петров", "2323223", "kjkjkj@jkj");
-        User user2 = new User("Петр", "Сидоров", "4345565", "ppop@jkj");
-        User user3 = new User("John", "Travolta", "4345565", "ppop@jkj");
+    public void fillDataBase() {
+        User user1 = new User("Иван", "Петров", "2323223", "petrov@mail.ru");
+        User user2 = new User("Петр", "Сидоров", "4345565", "sidorov@mail.ru");
+        User user3 = new User("John", "Travolta", "4345565", "travolta@gmail.com");
         userService.saveUser(user1);
         userService.saveUser(user2);
         userService.saveUser(user3);
@@ -49,11 +49,10 @@ public class PersistenceJPAConfig {
     }
 
     @Bean
-    public DataSource dataSource(){
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/crud231?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
-
         dataSource.setUsername("admin");
         dataSource.setPassword("password");
         return dataSource;
@@ -63,12 +62,11 @@ public class PersistenceJPAConfig {
     public PlatformTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-
         return transactionManager;
     }
 
     @Bean
-    public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
