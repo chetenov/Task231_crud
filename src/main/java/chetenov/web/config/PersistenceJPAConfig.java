@@ -1,5 +1,8 @@
 package chetenov.web.config;
 
+import chetenov.web.entity.User;
+import chetenov.web.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -17,6 +20,19 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 public class PersistenceJPAConfig {
+
+    @Autowired
+    private UserService userService;
+
+    @Bean
+    public void fillDataBase(){
+        User user1 = new User("Иван", "Петров", "2323223", "kjkjkj@jkj");
+        User user2 = new User("Петр", "Сидоров", "4345565", "ppop@jkj");
+        User user3 = new User("John", "Travolta", "4345565", "ppop@jkj");
+        userService.saveUser(user1);
+        userService.saveUser(user2);
+        userService.saveUser(user3);
+    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -36,9 +52,10 @@ public class PersistenceJPAConfig {
     public DataSource dataSource(){
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/crud231");
-        dataSource.setUsername( "admin" );
-        dataSource.setPassword( "password" );
+        dataSource.setUrl("jdbc:mysql://localhost:3306/crud231?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
+
+        dataSource.setUsername("admin");
+        dataSource.setPassword("password");
         return dataSource;
     }
 
@@ -59,7 +76,6 @@ public class PersistenceJPAConfig {
         Properties properties = new Properties();
         properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-
         return properties;
     }
 }

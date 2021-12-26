@@ -15,8 +15,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>5.3.13</version>
+      <version>5.3.14</version>
     </dependency>
 
     <dependency>
@@ -40,18 +40,18 @@
       <version>5.3.13</version>
     </dependency>
 
-<!--    &lt;!&ndash; https://mvnrepository.com/artifact/javax/javaee-api &ndash;&gt;-->
-<!--    <dependency>-->
-<!--      <groupId>javax</groupId>-->
-<!--      <artifactId>javaee-api</artifactId>-->
-<!--      <version>8.0.1</version>-->
-<!--      <scope>provided</scope>-->
-<!--    </dependency>-->
+    <!-- https://mvnrepository.com/artifact/javax/javaee-api -->
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>8.0.1</version>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>5.6.1.Final</version>
+      <version>5.6.2.Final</version>
     </dependency>
 
     <dependency>
@@ -63,7 +63,14 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring5</artifactId>
-      <version>3.0.13.RELEASE</version>
+      <version>3.0.14.RELEASE</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
     </dependency>
 
   </dependencies>
