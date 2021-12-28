@@ -3,14 +3,12 @@ package chetenov.web.service;
 import chetenov.web.dao.UserDao;
 import chetenov.web.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@Transactional
 public class UserServiceImpl implements UserService{
     UserDao userDao;
 
@@ -24,8 +22,8 @@ public class UserServiceImpl implements UserService{
         return userDao.getAllUsers();
     }
 
-
     @Override
+    @Transactional
     public void saveUser(User user) {
         userDao.saveUser(user);
     }
@@ -36,6 +34,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         userDao.deleteUser(id);
     }

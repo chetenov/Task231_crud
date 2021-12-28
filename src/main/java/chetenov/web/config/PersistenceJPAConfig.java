@@ -1,8 +1,5 @@
 package chetenov.web.config;
 
-import chetenov.web.entity.User;
-import chetenov.web.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -13,7 +10,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -21,31 +17,18 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class PersistenceJPAConfig {
 
-    @Autowired
-    private UserService userService;
-
-    @Bean
-    public void fillDataBase() {
-        User user1 = new User("Иван", "Петров", "2323223", "petrov@mail.ru");
-        User user2 = new User("Петр", "Сидоров", "4345565", "sidorov@mail.ru");
-        User user3 = new User("John", "Travolta", "4345565", "travolta@gmail.com");
-        userService.saveUser(user1);
-        userService.saveUser(user2);
-        userService.saveUser(user3);
-    }
-
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean em
+        LocalContainerEntityManagerFactoryBean emf
                 = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
-        em.setPackagesToScan("chetenov.web");
+        emf.setDataSource(dataSource());
+        emf.setPackagesToScan("chetenov.web");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(additionalProperties());
+        emf.setJpaVendorAdapter(vendorAdapter);
+        emf.setJpaProperties(additionalProperties());
 
-        return em;
+        return emf;
     }
 
     @Bean
