@@ -21,6 +21,8 @@
             <th>Id</th>
             <th>Имя</th>
             <th>Логин</th>
+            <th>Пароль</th>
+            <th>Роли</th>
             <th>Email</th>
             <th>Телефон</th>
             <th>Операции</th>
@@ -31,6 +33,18 @@
             <td th:text="${usr.id}">Id</td>
             <td th:text="${usr.name}">Name</td>
             <td th:text="${usr.username}">Username</td>
+            <td th:text="${usr.password}">Password</td>
+            <td>
+                <table>
+                    <tbody>
+                    <tr th:each="role : ${usr.roles}">
+<!--                        <td th:text="${role.id}">id</td>-->
+                        <td th:text="${role.role}">role</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </td>
             <td th:text="${usr.email}">Email</td>
             <td th:text="${usr.phone}">Phone</td>
             <td>

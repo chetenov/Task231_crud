@@ -2,7 +2,7 @@ package chetenov.web.service;
 
 
 
-import chetenov.web.entity.User;
+import chetenov.web.model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

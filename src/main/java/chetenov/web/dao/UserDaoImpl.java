@@ -1,9 +1,9 @@
 package chetenov.web.dao;
 
-import chetenov.web.entity.User;
+import chetenov.web.model.User;
 import org.springframework.stereotype.Repository;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+
+import javax.persistence.*;
 import java.util.List;
 
 @Repository
@@ -32,5 +32,11 @@ public class UserDaoImpl implements UserDao {
     public void deleteUser(Long id) {
         User user = em.getReference(User.class, id);
         em.remove(user);
+    }
+
+    @Override
+    public User getUserByName(String name) {
+            TypedQuery<User> tq = em.createQuery("select u from User as u WHERE u.username=:param", User.class);
+            return tq.setParameter("param", name).getSingleResult();
     }
 }
