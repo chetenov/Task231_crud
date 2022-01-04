@@ -30,11 +30,10 @@
         </div>
         <div>
 
-            <select multiple id="roles" th:field="*{rolesInString}">
-                <option th:each="role : ${default_roles}"
-                        th:selected="role == 'ROLE_USER'"
-                        th:value="${role}"
-                        th:text="${role}">Wireframe</option>
+            <select multiple id="roles" th:field="*{wantRoles}">
+                <option th:each="role : ${def_roles}"
+                        th:value="${role.id}"
+                        th:text="${role.role}">Wireframe</option>
             </select>
 
         </div>

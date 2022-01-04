@@ -6,10 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class User implements UserDetails, Serializable {
+@Table(name = "user")
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -18,25 +20,39 @@ public class User implements UserDetails, Serializable {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "username", unique = true)
+    @Column(name = "username")
     private String username;
 
     @Column(name = "password")
     private String password;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-//    @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @ManyToMany
+//            (cascade = {CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.MERGE})
+//            (cascade = {CascadeType.MERGE,CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+//    ,fetch = FetchType.EAGER
+//    )
+    @JoinTable(name = "users_roles"
+            , joinColumns = @JoinColumn(name = "user_id")
+            , inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    @Transient
-    private Set<String> rolesInString;
 
     @Column(name = "phone")
     private String phone;
 
     @Column(name = "email")
     private String email;
+
+    @Transient
+    private Set<Long> wantRoles = new HashSet<>();
+
+    public Set<Long> getWantRoles() {
+        return wantRoles;
+    }
+
+    public void setWantRoles(Set<Long> wantRoles) {
+        this.wantRoles = wantRoles;
+    }
 
     public String getPhone() {
         return phone;
@@ -50,26 +66,27 @@ public class User implements UserDetails, Serializable {
     }
 
 
-    public User(String name, String username, String password, Set<Role> roles) {
+    public User(String name, String username, String password) {
         this.name = name;
         this.username = username;
         this.password = password;
+    }
+
+    public User(String name, String username, String password, Set<Role> roles) {
+        this(name, username, password);
         this.roles = roles;
     }
 
-    public User(String name, String username, String password, Set<Role> roles, String phone, String email) {
-        this(name, username, password, roles);
+    public User(String name, String username, String password, String phone, String email) {
+        this(name, username, password);
         this.phone = phone;
         this.email = email;
     }
 
-    public Set<String> getRolesInString() {
-        return rolesInString;
+    public void addRoleToUser(Role role){
+        this.roles.add(role);
     }
 
-    public void setRolesInString(Set<String> rolesInString) {
-        this.rolesInString = rolesInString;
-    }
 
     public String getName() {
         return name;

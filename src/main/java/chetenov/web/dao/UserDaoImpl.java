@@ -1,25 +1,41 @@
 package chetenov.web.dao;
 
+import chetenov.web.model.Role;
 import chetenov.web.model.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
-@Repository
+//@Repository
 public class UserDaoImpl implements UserDao {
 
-    @PersistenceContext
+    public UserDaoImpl() {
+
+    }
+
+        @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private EntityManager em;
 
     @Override
     public List<User> getAllUsers() {
         return em.createQuery("select u from User u", User.class)
+//        return em.createQuery("select u from User u join fetch u.roles", User.class)
                 .getResultList();
+    }
+
+    public List<Role>getAllRoles(){
+        return em.createQuery("select r from Role r", Role.class).getResultList();
     }
 
     @Override
     public void saveUser(User user) {
+//        for(Role r : user.getRoles()){
+//            Long id = em.createQuery("select r from Role r where r.role=:param", Role.class)
+//                    .setParameter("param", r.getRole()).getSingleResult().getId();
+//            r.setId(id);
+//        }
         em.merge(user);
     }
 

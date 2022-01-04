@@ -1,10 +1,11 @@
 package chetenov.web.service;
 
 import chetenov.web.dao.UserDao;
-import chetenov.web.model.DefaultRoles;
 import chetenov.web.model.Role;
 import chetenov.web.model.User;
+import chetenov.web.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,14 +13,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Transactional
 @Service
 public class UserServiceImpl implements UserService{
     UserDao userDao;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(@Qualifier("userDaoImpl_SessionFactory") UserDao userDao) {
         this.userDao = userDao;
+
     }
+
+//    public void createTables(){
+//        userDao.createTables();
+//    }
 
     @Override
     public List<User> getAllUsers() {
@@ -27,16 +34,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    @Transactional
+    public List<Role> getAllRoles() {
+        return userDao.getAllRoles();
+    }
+
+    @Override
+//    @Transactional
     public void saveUser(User user) {
-        Set<String> rolesStr = user.getRolesInString();
-        if (rolesStr != null){
-            Set<Role> roles = new HashSet<>();
-            for (String s : rolesStr){
-                roles.add(new Role((long) DefaultRoles.valueOf(s).ordinal()+1, s));
-            }
-            user.setRoles(roles);
-        }
         userDao.saveUser(user);
     }
 
@@ -46,7 +50,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public void deleteUser(Long id) {
         userDao.deleteUser(id);
     }

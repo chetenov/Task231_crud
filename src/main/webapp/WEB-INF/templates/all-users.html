@@ -29,32 +29,32 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="usr : ${allUsers}">
-            <td th:text="${usr.id}">Id</td>
-            <td th:text="${usr.name}">Name</td>
-            <td th:text="${usr.username}">Username</td>
-            <td th:text="${usr.password}">Password</td>
+        <tr th:each="user : ${allUsers}">
+            <td th:text="*{user.id}">Id</td>
+            <td th:text="${user.name}">Name</td>
+            <td th:text="${user.username}">Username</td>
+            <td th:text="${user.password}">Password</td>
             <td>
                 <table>
                     <tbody>
-                    <tr th:each="role : ${usr.roles}">
-<!--                        <td th:text="${role.id}">id</td>-->
+                    <tr th:each="role : ${user.roles}">
+                        <td th:text="${role.id}">id</td>
                         <td th:text="${role.role}">role</td>
                     </tr>
                     </tbody>
                 </table>
 
             </td>
-            <td th:text="${usr.email}">Email</td>
-            <td th:text="${usr.phone}">Phone</td>
+            <td th:text="${user.email}">Email</td>
+            <td th:text="${user.phone}">Phone</td>
             <td>
                 <button
-                        th:href="@{admin/updateInfo(userId=${usr.id})}"
+                        th:href="@{admin/updateInfo(userId=${user.id})}"
                         onclick="window.location.href=(this.getAttribute('href'))">Изменить
                 </button>
 
                 <button
-                        th:href="@{admin/deleteUser(userId=${usr.id})}"
+                        th:href="@{admin/deleteUser(userId=${user.id})}"
                         onclick="window.location.href=(this.getAttribute('href'))">Удалить
                 </button>
 
@@ -64,7 +64,7 @@
         </tbody>
     </table>
     <div class="text-center">
-        <a href="admin/addNewUser">Добавить нового пользователя</a>
+        <a href="admin/updateInfo">Добавить нового пользователя</a>
     </div>
 
 </div>

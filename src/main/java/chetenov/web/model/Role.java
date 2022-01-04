@@ -2,32 +2,59 @@ package chetenov.web.model;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 // Этот класс реализует интерфейс GrantedAuthority, в котором необходимо переопределить только один метод getAuthority() (возвращает имя роли).
 // Имя роли должно соответствовать шаблону: «ROLE_ИМЯ», например, ROLE_USER.
 
 
+@Entity
+@Table(name = "role")
 public class Role implements GrantedAuthority {
 
+
+    @Id
+    @Column(name = "id", nullable = false)
     private Long id;
+
+    @Column(name = "role")
     private String role;
+
+    @ManyToMany
+//            (cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
+//            mappedBy = "roles")
+//            (cascade = {CascadeType.MERGE,CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
+//            ,fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles"
+            , joinColumns = @JoinColumn(name = "role_id")
+            , inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> users = new HashSet<>();
+
+    public Role() {
+        System.out.println("Вызван конструктор 0");
+    }
+
+
+    public Role(String role) {
+        this.role = role;
+        System.out.println("Вызван конструктор 1");
+    }
 
     public Role(Long id, String role) {
         this.id = id;
         this.role = role;
+        System.out.println("Вызван конструктор 2");
     }
 
-    public Role() {
-
+    public void addUserToRole(User user){
+        users.add(user);
     }
 
-    public Role(long id, DefaultRoles role) {
-        this.id = id;
-        this.role = role.toString();
+    public Set<User> getUsers() {
+        return users;
     }
-
 
     public Long getId() {
         return id;

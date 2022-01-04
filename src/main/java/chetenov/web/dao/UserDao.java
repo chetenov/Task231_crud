@@ -1,9 +1,12 @@
 package chetenov.web.dao;
 
+import chetenov.web.model.Role;
 import chetenov.web.model.User;
 import java.util.List;
 
 public interface UserDao {
+
+//    void createTables();
 
     List<User> getAllUsers();
 
@@ -14,4 +17,6 @@ public interface UserDao {
     void deleteUser(Long id);
 
     User getUserByName(String name);
+
+    List<Role> getAllRoles();
 }
