@@ -1,4 +1,6 @@
-package chetenov.web.model;
+package chetenov.web.model.trash;
+
+import chetenov.web.model.trash.Test;
 
 import javax.persistence.*;
 import java.util.HashSet;

@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,10 +28,6 @@ public class User implements UserDetails {
     private String password;
 
     @ManyToMany
-//            (cascade = {CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.MERGE})
-//            (cascade = {CascadeType.MERGE,CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
-//    ,fetch = FetchType.EAGER
-//    )
     @JoinTable(name = "users_roles"
             , joinColumns = @JoinColumn(name = "user_id")
             , inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -43,14 +40,20 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @Transient
-    private Set<Long> wantRoles = new HashSet<>();
+    private boolean isAccountNonExpired;
+    private boolean isAccountNonLocked;
+    private boolean isCredentialsNonExpired;
+    private boolean isEnabled;
 
-    public Set<Long> getWantRoles() {
+
+    @Transient
+    private Set<String> wantRoles = new HashSet<>();
+
+    public Set<String> getWantRoles() {
         return wantRoles;
     }
 
-    public void setWantRoles(Set<Long> wantRoles) {
+    public void setWantRoles(Set<String> wantRoles) {
         this.wantRoles = wantRoles;
     }
 
@@ -63,18 +66,18 @@ public class User implements UserDetails {
     }
 
     public User() {
+        this.isAccountNonExpired = true;
+        this.isAccountNonLocked = true;
+        this.isCredentialsNonExpired = true;
+        this.isEnabled = true;
     }
 
 
     public User(String name, String username, String password) {
+        this();
         this.name = name;
         this.username = username;
         this.password = password;
-    }
-
-    public User(String name, String username, String password, Set<Role> roles) {
-        this(name, username, password);
-        this.roles = roles;
     }
 
     public User(String name, String username, String password, String phone, String email) {
@@ -83,8 +86,21 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public void addRoleToUser(Role role){
+//    public User(String name, String username, String password, Set<Role> roles) {
+//        this(name, username, password);
+//        this.roles = roles;
+//    }
+
+
+
+    public User addRoleToUser(Role role){
         this.roles.add(role);
+        return this;
+    }
+
+    public User addRolesToUser(Role ... role){
+        this.roles.addAll(Arrays.asList(role));
+        return this;
     }
 
 
@@ -122,6 +138,10 @@ public class User implements UserDetails {
                 ", roles=" + roles +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
+                ", isAccountNonExpired=" + isAccountNonExpired +
+                ", isAccountNonLocked=" + isAccountNonLocked +
+                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
+                ", isEnabled=" + isEnabled +
                 '}';
     }
 
@@ -158,21 +178,40 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return isAccountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isAccountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return isCredentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
+
+
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        isAccountNonExpired = accountNonExpired;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        isAccountNonLocked = accountNonLocked;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        isCredentialsNonExpired = credentialsNonExpired;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
 }

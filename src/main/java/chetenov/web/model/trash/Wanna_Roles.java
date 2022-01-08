@@ -1,5 +1,6 @@
-package chetenov.web.model;
+package chetenov.web.model.trash;
 
+import chetenov.web.model.Role;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

@@ -1,47 +1,50 @@
 package chetenov.web.service;
 
 import chetenov.web.dao.UserDao;
+import chetenov.web.exception.NotUniqUsernameException;
 import chetenov.web.model.Role;
 import chetenov.web.model.User;
 import chetenov.web.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Transactional
+
 @Service
-public class UserServiceImpl implements UserService{
+@Transactional
+public class UserServiceImpl implements UserService, UserDetailsService {
     UserDao userDao;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("userDaoImpl_SessionFactory") UserDao userDao) {
+    public UserServiceImpl(UserDao userDao) {
         this.userDao = userDao;
-
     }
-
-//    public void createTables(){
-//        userDao.createTables();
-//    }
 
     @Override
     public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+        List<User> users = userDao.getAllUsers();
+        return users;
     }
 
     @Override
-    public List<Role> getAllRoles() {
-        return userDao.getAllRoles();
-    }
-
-    @Override
-//    @Transactional
     public void saveUser(User user) {
-        userDao.saveUser(user);
+            userDao.saveUser(user);
+    }
+
+    @Override
+    public void saveUsers(User... user) {
+        Arrays.stream(user).forEach(userDao::saveUser);
     }
 
     @Override
@@ -50,8 +53,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-//    @Transactional
     public void deleteUser(Long id) {
         userDao.deleteUser(id);
+    }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userDao.getUserByName(username);
     }
 }

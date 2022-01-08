@@ -1,6 +1,6 @@
-package chetenov.web.dao;
+package chetenov.web.dao.trash;
 
-import chetenov.web.model.Test;
+import chetenov.web.model.trash.Test;
 
 import java.util.List;
 

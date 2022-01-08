@@ -1,8 +1,10 @@
 package chetenov.web.model;
 
+import chetenov.web.util.StandartRoles;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,39 +19,44 @@ public class Role implements GrantedAuthority {
 
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "role")
+    @Column(name = "role", unique = true)
     private String role;
 
     @ManyToMany
-//            (cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE})
-//            mappedBy = "roles")
-//            (cascade = {CascadeType.MERGE,CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH})
-//            ,fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles"
             , joinColumns = @JoinColumn(name = "role_id")
             , inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new HashSet<>();
 
     public Role() {
-        System.out.println("Вызван конструктор 0");
+//        System.out.println("Вызван конструктор 0");
     }
 
 
-    public Role(String role) {
-        this.role = role;
-        System.out.println("Вызван конструктор 1");
+//    public Role(String role) {
+//        this.role = role;
+////        System.out.println("Вызван конструктор 1");
+//    }
+
+    public Role(StandartRoles standartRole){
+        this.role = standartRole.name();
     }
 
     public Role(Long id, String role) {
         this.id = id;
         this.role = role;
-        System.out.println("Вызван конструктор 2");
+//        System.out.println("Вызван конструктор 2");
     }
 
     public void addUserToRole(User user){
         users.add(user);
+    }
+
+    public void addUsersToRole(User ... user){
+        users.addAll(Arrays.asList(user));
     }
 
     public Set<User> getUsers() {
@@ -65,7 +72,7 @@ public class Role implements GrantedAuthority {
     }
 
     public String getRole() {
-        return role;
+        return this.role;
     }
 
     public void setRole(String role) {
@@ -79,9 +86,6 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", role='" + role + '\'' +
-                '}';
+        return role;
     }
 }

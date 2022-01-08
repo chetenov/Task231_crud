@@ -1,6 +1,6 @@
-package chetenov.web.service;
+package chetenov.web.service.trash;
 
-import chetenov.web.model.Test;
+import chetenov.web.model.trash.Test;
 
 import java.util.List;
 

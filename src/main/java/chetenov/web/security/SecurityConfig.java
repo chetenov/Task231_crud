@@ -9,7 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
@@ -19,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService; // сервис, с помощью которого тащим пользователя
     private final SuccessUserHandler successUserHandler; // класс, в котором описана логика перенаправления пользователей по ролям
 
-    public SecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService, SuccessUserHandler successUserHandler) {
+    public SecurityConfig(UserDetailsService userDetailsService, SuccessUserHandler successUserHandler) {
         this.userDetailsService = userDetailsService;
         this.successUserHandler = successUserHandler;
     }
@@ -39,17 +41,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(filter, CsrfFilter.class);
 
         http.authorizeRequests()
-                .antMatchers("/*").permitAll(); // доступность всем
-//                .antMatchers("/user/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')") // разрешаем входить на /user пользователям с ролью User
-//                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-//                .and().formLogin()  // Spring сам подставит свою логин форму
-//                .successHandler(successUserHandler); // подключаем наш SuccessHandler для перенеправления по ролям
+                .antMatchers("/").permitAll() // доступность всем
+                .antMatchers("/user/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')") // разрешаем входить на /user пользователям с ролью User
+                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+                .and().formLogin()  // Spring сам подставит свою логин форму
+                .successHandler(successUserHandler); // подключаем наш SuccessHandler для перенеправления по ролям
     }
 
     // Необходимо для шифрования паролей
     // В данном примере не используется, отключен
+//    @Bean
+//    public static NoOpPasswordEncoder passwordEncoder() {
+//        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+//    }
+
     @Bean
-    public static NoOpPasswordEncoder passwordEncoder() {
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    public static PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

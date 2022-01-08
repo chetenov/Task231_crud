@@ -9,43 +9,89 @@
     <title>User info</title>
 </head>
 <body>
-<div class="container">
-    <div class="mt-5 text-center">
-        <h1>Данные пользователя</h1>
+<div th:insert="header :: logout"></div>
+
+<div class="container px-4">
+    <div class="m-2 text-center">
+        <h3>Данные пользователя</h3>
     </div>
-    <br/><br/>
-
-    <form action="#" th:action="@{/admin/saveUser}" th:object="${user}" method="post" class="memberSummary">
-        <div hidden>
-        <input type="text" th:field="*{id}" id="id" placeholder="id"><label for="id">Id</label>
-        </div>
-        <div>        <input type="text" th:field="*{name}" id="name" placeholder="Ivan"><label for="name">Имя</label>
-        </div>
-        <div>        <input type="text" th:field="*{username}" id="username" placeholder="Ivanov"><label for="username">Логин</label>
-        </div>
-        <div>        <input type="text" th:field="*{password}" id="password" placeholder="*****"><label for="password">Пароль</label>
-        </div>
-        <div></div>
-        <div>        <input type="text" th:field="*{phone}" id="phone" placeholder="Phone"><label for="phone">Телефон</label>
-        </div>
-        <div>
-
-            <select multiple id="roles" th:field="*{wantRoles}">
-                <option th:each="role : ${def_roles}"
-                        th:value="${role.id}"
-                        th:text="${role.role}">Wireframe</option>
-            </select>
-
-        </div>
-
-        <div>        <button type="submit">Сохранить!</button>
-        </div>
-        <div>        <button onclick="window.location.href='/admin'" type="button">Отмена</button>
-        </div>
 
 
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <form action="#" th:action="${pathName}" th:object="${user_form}" method="post">
+                <div hidden>
+                    <label for="id">Id</label>
+                    <input readonly type="text" th:field="*{user.id}" id="id" placeholder="id">
+                </div>
+                <div>
+                    <label for="name">Name</label>
+                    <input required type="text" th:field="*{user.name}" id="name" placeholder="Name">
+                </div>
+                <div>
+                    <label for="username">Username</label>
+                    <input required type="text" th:field="*{user.username}" id="username" placeholder="Username">
+                </div>
 
-    </form>
+                <div>
+                    <label for="newPassword">New Password</label>
+                    <input type="password" th:field="*{newPassword}" id="newPassword" placeholder="New Password">
+                </div>
+
+
+                <div>
+                    <label for="phone">Phone</label>
+                    <input type="text" th:field="*{user.phone}" id="phone" placeholder="Phone">
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <input type="text" th:field="*{user.email}" id="email" placeholder="Email">
+                </div>
+
+                <div>
+                    <th:block th:each="pair : *{getCheckBoxes()}">
+                        <div>
+                            <input type="checkbox" th:checked="${pair.getValue()}" th:name="checkRoles"
+                                   th:value="${pair.getKey()}"/>
+                            <label th:text="${pair.getKey().substring(5)}"></label>
+                        </div>
+                    </th:block>
+                </div>
+
+                <div>
+                    <input id="enabled" type="checkbox" th:field="*{user.enabled}"
+                           th:checked="*{user.enabled}" th:value="true"/>
+                    <label for="enabled">User is enabled</label>
+                </div>
+
+                <div>
+                    <input id="accNonExpired" type="checkbox" th:field="*{user.accountNonExpired}"
+                           th:checked="*{user.accountNonExpired}" th:value="true"/>
+                    <label for="accNonExpired">Account Non Expired</label>
+                </div>
+
+                <div>
+                    <input id="accNonLocked" type="checkbox" th:field="*{user.accountNonLocked}"
+                           th:checked="*{user.accountNonLocked}" th:value="true"/>
+                    <label for="accNonLocked">Account Non Locked</label>
+                </div>
+
+                <div>
+                    <input id="credNonExpired" type="checkbox" th:field="*{user.credentialsNonExpired}"
+                           th:checked="*{user.credentialsNonExpired}" th:value="true"/>
+                    <label for="credNonExpired">Credentials Non Expired</label>
+                </div>
+
+                <div>
+                    <button type="submit">Сохранить!</button>
+                </div>
+                <div>
+                    <button onclick="window.location.href='/admin'" type="button">Отмена</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 
 
 </div>

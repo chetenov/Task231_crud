@@ -1,80 +1,109 @@
 package chetenov.web.util;
 
-import chetenov.web.dao.TestDao;
-import chetenov.web.dao.TestDaoImpl;
 import chetenov.web.model.*;
-import chetenov.web.service.EntityService;
-import chetenov.web.service.TestService;
+import chetenov.web.service.RoleService;
 import chetenov.web.service.UserService;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import javax.persistence.NonUniqueResultException;
+import java.util.List;
 
 @Service
 public class Util {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TestService testService;
-    @Autowired
-    private SessionFactory sessionFactory;
-    @Autowired
-    private EntityService entityService;
 
-    private final Map<StandartRoles, Role> defaultRoles = new HashMap<>();
+//    public enum StandartRoles{
+//        ROLE_USER, ROLE_ADMIN
+//    }
+
+    private final UserService userService;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
 
-    @Bean
-    public Map<StandartRoles, Role> getDefaultRoles() {
-        Role role_admin = new Role(1L, "ROLE_ADMIN");
-        Role role_user = new Role(2L, "ROLE_USER");
-        defaultRoles.put(StandartRoles.ROLE_ADMIN, role_admin);
-        defaultRoles.put(StandartRoles.ROLE_USER, role_user);
-        System.out.println("Созданы объекты roles getDefaultRoles()");
-        return defaultRoles;
+    @Autowired
+    public Util(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
+
+
+//    @Bean
+//    public Map<StandartRoles, Role> getDefaultRoles() {
+//        Role role_admin = new Role(1L, "ROLE_ADMIN");
+//        Role role_user = new Role(2L, "ROLE_USER");
+//        defaultRoles.put(StandartRoles.ROLE_ADMIN, role_admin);
+//        defaultRoles.put(StandartRoles.ROLE_USER, role_user);
+////        System.out.println("Созданы объекты roles getDefaultRoles()");
+//        return defaultRoles;
+//    }
+
+//    @Bean
+//    public void createRoles(){
+//
+//
+//    }
 
 
     public void fillDataBase() {
-
-        System.out.println("--------------------U T I L---------------------");
-
-        User user1 = new User("Administrator", "a", "a");
-        User user2 = new User("Ivan", "ivan", "ivan");
-        User user3 = new User("Maria", "maria", "maria");
-        User user4 = new User("Petr", "petr", "petr");
-
-        System.out.println("Созданы объекты users");
+        System.out.println("UTIL start");
 
 
-        entityService.save(defaultRoles.get(StandartRoles.ROLE_ADMIN));
-        entityService.save(defaultRoles.get(StandartRoles.ROLE_USER));
 
-        user1.addRoleToUser(defaultRoles.get(StandartRoles.ROLE_ADMIN));
-        user1.addRoleToUser(defaultRoles.get(StandartRoles.ROLE_USER));
-        user2.addRoleToUser(defaultRoles.get(StandartRoles.ROLE_USER));
-        user3.addRoleToUser(defaultRoles.get(StandartRoles.ROLE_USER));
-        user4.addRoleToUser(defaultRoles.get(StandartRoles.ROLE_USER));
-//        user4.addRoleToUser(defaultRoles.get(StandartRoles.ROLE_ADMIN));
+        List<Role> roleList = null;
+        try {
+           roleList = roleService.getAllRoles();
+        }catch (Exception e){
+            System.out.println(roleList);
+            System.out.println(e);
+        }
+        System.out.println("Была попытка получить роли: " + roleList);
 
-        System.out.println("Добавлены роли в объекты");
+        if (roleList == null || roleList.isEmpty()) {
+            for (StandartRoles role : StandartRoles.values()) {
+                roleService.saveRole(new Role(role));
+            }
+            System.out.println("Добавили роли...");
+        }
+
+        Role userRole = roleService.getRoleByName(StandartRoles.ROLE_USER.name());
+        Role adminRole = roleService.getRoleByName(StandartRoles.ROLE_ADMIN.name());
+
+//        User user = new User("Aaa", "a", passwordEncoder.encode("a"));
+//        user.addRoleToUser(adminRole);
+//        user.addRoleToUser(userRole);
+//        userService.saveUser(user);
+
+        userService.saveUsers(
+                new User("Admin", "a", passwordEncoder.encode("a"),
+                        "+79220005511", "aaa@mail.ru")
+                .addRolesToUser(userRole, adminRole),
+
+                new User("Ivan", "ivan", passwordEncoder.encode("ivan"),
+                        "+79220005512", "ivan@mail.ru")
+                .addRoleToUser(userRole),
+
+                new User("Maria", "maria", passwordEncoder.encode("maria"),
+                        "+79220005513", "maria@mail.ru")
+                .addRoleToUser(userRole),
+
+                new User("Petr", "petr", passwordEncoder.encode("petr"),
+                        "+79220005514", "petr@mail.ru")
+                .addRoleToUser(userRole));
 
 
-        userService.saveUser(user1);
-        userService.saveUser(user2);
-        userService.saveUser(user3);
-        userService.saveUser(user4);
+//        User testUser = new User("Test", "test","test");
+//        testUser.addRoleToUser(userRole);
+//        System.out.println("RAW Password: " + testUser.getPassword());
+//        String pass = passwordEncoder.encode(testUser.getPassword());
+//        System.out.println("Encoded Password: " + pass);
+//        testUser.setPassword(pass);
+//        userService.saveUser(testUser);
 
-        System.out.println("--------------------END of UTIL-------------------");
-    }
 
-    public enum StandartRoles{
-        ROLE_USER, ROLE_ADMIN
+        System.out.println("UTIL finish");
+
     }
 
 }

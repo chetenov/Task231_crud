@@ -1,6 +1,6 @@
-package chetenov.web.dao;
+package chetenov.web.dao.trash;
 
-import chetenov.web.model.Test;
+import chetenov.web.model.trash.Test;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

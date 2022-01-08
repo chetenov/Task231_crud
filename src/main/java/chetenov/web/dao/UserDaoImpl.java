@@ -5,43 +5,41 @@ import chetenov.web.model.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-//@Repository
+@Repository
 public class UserDaoImpl implements UserDao {
 
     public UserDaoImpl() {
-
     }
-
-        @PersistenceContext(type = PersistenceContextType.EXTENDED)
+        @PersistenceContext
     private EntityManager em;
 
     @Override
     public List<User> getAllUsers() {
-        return em.createQuery("select u from User u", User.class)
-//        return em.createQuery("select u from User u join fetch u.roles", User.class)
-                .getResultList();
-    }
-
-    public List<Role>getAllRoles(){
-        return em.createQuery("select r from Role r", Role.class).getResultList();
+        System.out.println("getAllUsers()");
+        List<User> users = em.createQuery("select distinct u from User u join fetch u.roles", User.class).getResultList();
+        System.out.println("done: ");
+        return users;
     }
 
     @Override
     public void saveUser(User user) {
-//        for(Role r : user.getRoles()){
-//            Long id = em.createQuery("select r from Role r where r.role=:param", Role.class)
-//                    .setParameter("param", r.getRole()).getSingleResult().getId();
-//            r.setId(id);
-//        }
+        System.out.println("saveUser() " + user);
         em.merge(user);
+        System.out.println("done");
     }
 
     @Override
     public User getUser(Long id) {
-        return em.find(User.class, id);
+        System.out.println("getUser() " + id);
+        TypedQuery<User> tq = em.createQuery("select distinct u from User as u join fetch u.roles WHERE u.id=:param", User.class);
+        User user = tq.setParameter("param", id).getSingleResult();
+
+        System.out.println("done ");
+        return user;
     }
 
     @Override
@@ -52,7 +50,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getUserByName(String name) {
-            TypedQuery<User> tq = em.createQuery("select u from User as u WHERE u.username=:param", User.class);
-            return tq.setParameter("param", name).getSingleResult();
+        System.out.println("getUserByName() " + name);
+            TypedQuery<User> tq = em.createQuery("select distinct u from User as u join fetch u.roles WHERE u.username=:param", User.class);
+            User user = tq.setParameter("param", name).getSingleResult();
+//        System.out.println("done " + user);
+            return user;
     }
+
 }

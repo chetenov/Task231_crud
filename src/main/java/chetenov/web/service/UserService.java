@@ -11,13 +11,11 @@ import java.util.List;
 @Service
 public interface UserService {
 
-//    void createTables();
-
     List<User> getAllUsers();
 
-    public List<Role> getAllRoles();
-
     void saveUser(User user);
+
+    void saveUsers(User ... user);
 
     User getUser(Long id);
 

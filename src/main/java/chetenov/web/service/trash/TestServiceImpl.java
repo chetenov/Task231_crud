@@ -1,13 +1,13 @@
-package chetenov.web.service;
+package chetenov.web.service.trash;
 
-import chetenov.web.dao.TestDao;
-import chetenov.web.model.Test;
+import chetenov.web.dao.trash.TestDao;
+import chetenov.web.model.trash.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+//@Service
 public class TestServiceImpl implements TestService{
 
     @Autowired

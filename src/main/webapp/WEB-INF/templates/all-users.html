@@ -9,6 +9,7 @@
     <title>All users</title>
 </head>
 <body>
+<div th:insert="header :: logout"></div>
 <div class="container">
     <div class="mt-5 text-center">
         <h1>Список пользователей</h1>
@@ -21,7 +22,6 @@
             <th>Id</th>
             <th>Имя</th>
             <th>Логин</th>
-            <th>Пароль</th>
             <th>Роли</th>
             <th>Email</th>
             <th>Телефон</th>
@@ -33,13 +33,11 @@
             <td th:text="*{user.id}">Id</td>
             <td th:text="${user.name}">Name</td>
             <td th:text="${user.username}">Username</td>
-            <td th:text="${user.password}">Password</td>
             <td>
                 <table>
                     <tbody>
                     <tr th:each="role : ${user.roles}">
-                        <td th:text="${role.id}">id</td>
-                        <td th:text="${role.role}">role</td>
+                        <td th:text="${role.role.substring(5)}">role</td>
                     </tr>
                     </tbody>
                 </table>
@@ -63,8 +61,8 @@
         </tr>
         </tbody>
     </table>
-    <div class="text-center">
-        <a href="admin/updateInfo">Добавить нового пользователя</a>
+    <div class="mb-6 text-center">
+        <a href="admin/updateInfo">Добавить нового пользователя<br><br></a>
     </div>
 
 </div>
