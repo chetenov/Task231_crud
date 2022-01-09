@@ -1,7 +1,5 @@
 package chetenov.web.controller;
 
-import chetenov.web.model.trash.TestForms;
-import chetenov.web.service.trash.TestService;
 import chetenov.web.service.UserService;
 import chetenov.web.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;

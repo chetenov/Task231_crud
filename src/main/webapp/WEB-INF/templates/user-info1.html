@@ -12,82 +12,84 @@
 <div th:insert="header :: logout"></div>
 
 <div class="container px-4">
-    <div class="m-2 text-center">
-        <h3>Данные пользователя</h3>
+    <div class="pb-2 text-center">
+        <h4 th:text="*{user_form.user.id != null}? 'Изменение данных пользователя' : 'Добавление нового пользователя'">Данные пользователя</h4>
     </div>
 
 
     <div class="row justify-content-md-center">
-        <div class="col-md-auto">
+        <div class="col-md-4">
             <form action="#" th:action="${pathName}" th:object="${user_form}" method="post">
                 <div hidden>
                     <label for="id">Id</label>
                     <input readonly type="text" th:field="*{user.id}" id="id" placeholder="id">
                 </div>
                 <div>
-                    <label for="name">Name</label>
-                    <input required type="text" th:field="*{user.name}" id="name" placeholder="Name">
+                    <label class="form-label" for="name">*Name</label>
+                    <input class="form-control" required type="text" th:field="*{user.name}" id="name" placeholder="John">
                 </div>
                 <div>
-                    <label for="username">Username</label>
-                    <input required type="text" th:field="*{user.username}" id="username" placeholder="Username">
-                </div>
-
-                <div>
-                    <label for="newPassword">New Password</label>
-                    <input type="password" th:field="*{newPassword}" id="newPassword" placeholder="New Password">
+                    <label class="form-label" for="username">*Username</label>
+                    <input class="form-control" required type="text" th:field="*{user.username}" id="username" placeholder="Jonny2022">
                 </div>
 
+                <div>
+
+                    <label class="form-label" for="Password" th:text="*{user.id != null}? 'Password' : '*Password'">Password</label>
+                    <input class="form-control" th:required="*{user.id != null}? 'false' : 'true'" type="password" th:field="*{newPassword}"
+                           id="Password" th:placeholder="*{user.id != null}? 'Enter to change password' : 'Enter password'">
+                </div>
+
 
                 <div>
-                    <label for="phone">Phone</label>
-                    <input type="text" th:field="*{user.phone}" id="phone" placeholder="Phone">
+                    <label class="form-label" for="phone">Phone</label>
+                    <input class="form-control" type="text" th:field="*{user.phone}" id="phone" placeholder="Phone">
                 </div>
                 <div>
-                    <label for="email">Email</label>
-                    <input type="text" th:field="*{user.email}" id="email" placeholder="Email">
+                    <label class="form-label" for="email">Email</label>
+                    <input class="form-control" type="email" th:field="*{user.email}" id="email" placeholder="Email">
                 </div>
 
                 <div>
                     <th:block th:each="pair : *{getCheckBoxes()}">
                         <div>
-                            <input type="checkbox" th:checked="${pair.getValue()}" th:name="checkRoles"
+                            <input class="form-check-input" type="checkbox" th:checked="${pair.getValue()}" th:name="checkRoles"
                                    th:value="${pair.getKey()}"/>
-                            <label th:text="${pair.getKey().substring(5)}"></label>
+                            <label class="form-check-label" th:text="${pair.getKey().substring(5)}"></label>
                         </div>
                     </th:block>
                 </div>
 
                 <div>
-                    <input id="enabled" type="checkbox" th:field="*{user.enabled}"
+                    <input class="form-check-input" id="enabled" type="checkbox" th:field="*{user.enabled}"
                            th:checked="*{user.enabled}" th:value="true"/>
-                    <label for="enabled">User is enabled</label>
+                    <label class="form-check-label" for="enabled">User is enabled</label>
                 </div>
 
                 <div>
-                    <input id="accNonExpired" type="checkbox" th:field="*{user.accountNonExpired}"
+                    <input class="form-check-input" id="accNonExpired" type="checkbox" th:field="*{user.accountNonExpired}"
                            th:checked="*{user.accountNonExpired}" th:value="true"/>
-                    <label for="accNonExpired">Account Non Expired</label>
+                    <label class="form-check-label" for="accNonExpired">Account Non Expired</label>
                 </div>
 
                 <div>
-                    <input id="accNonLocked" type="checkbox" th:field="*{user.accountNonLocked}"
+                    <input class="form-check-input" id="accNonLocked" type="checkbox" th:field="*{user.accountNonLocked}"
                            th:checked="*{user.accountNonLocked}" th:value="true"/>
-                    <label for="accNonLocked">Account Non Locked</label>
+                    <label class="form-check-label" for="accNonLocked">Account Non Locked</label>
                 </div>
 
                 <div>
-                    <input id="credNonExpired" type="checkbox" th:field="*{user.credentialsNonExpired}"
+                    <input class="form-check-input" id="credNonExpired" type="checkbox" th:field="*{user.credentialsNonExpired}"
                            th:checked="*{user.credentialsNonExpired}" th:value="true"/>
-                    <label for="credNonExpired">Credentials Non Expired</label>
+                    <label class="form-check-label" for="credNonExpired">Credentials Non Expired</label>
                 </div>
 
-                <div>
-                    <button type="submit">Сохранить!</button>
+                <div class="gap-2 d-md-flex justify-content-md-end">
+                    <button class="btn btn-primary" type="submit">Сохранить!</button>
+                    <button class="btn btn-secondary" onclick="window.location.href='/admin'" type="button">Отмена</button>
+
                 </div>
-                <div>
-                    <button onclick="window.location.href='/admin'" type="button">Отмена</button>
-                </div>
+
 
             </form>
         </div>

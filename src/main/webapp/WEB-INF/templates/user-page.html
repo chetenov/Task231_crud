@@ -40,7 +40,16 @@
                 </tr>
                 <tr>
                     <td>Roles:</td>
-                    <td th:text="${user.roles}"></td>
+                    <td>
+
+<!--                        <div>-->
+                            <th:block th:each="role : *{user.roles}">
+                                <div th:text="${role.getRole().substring(5)}">
+                                </div>
+                            </th:block>
+<!--                        </div>-->
+
+                    </td>
                 </tr>
             </table>
         </div>

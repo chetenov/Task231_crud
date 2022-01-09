@@ -4,6 +4,7 @@ import chetenov.web.model.Role;
 import chetenov.web.model.User;
 import chetenov.web.model.UserForm;
 import chetenov.web.service.RoleService;
+import chetenov.web.util.Errors;
 import chetenov.web.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,21 +20,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin")
 public class MainController {
 
-    private String[] cont = new String[5];
-    private Set<String> wantRoles = new HashSet<>();
 
 
     private final UserService userService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
-//    private boolean isFilledDb;
 
     @Autowired
     private Util util;
 
     private Set<String> defRoles = new HashSet<>();
-
-//    private Map<Long,Role> mapRoles = new HashMap<>();
 
     @Autowired
     public MainController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
@@ -45,7 +41,6 @@ public class MainController {
 
     @GetMapping("")
     public String showAllUsers(Model model) {
-        System.out.println("showAllUsers() main controller");
 
         List<User> allUsers = userService.getAllUsers();
         if (allUsers == null || allUsers.isEmpty()) {
@@ -57,7 +52,6 @@ public class MainController {
         if (defRoles.isEmpty()) {
             for (Role r : roleService.getAllRoles()) {
                 defRoles.add(r.getRole());
-                System.out.println(r.getRole() + " added");
             }
         }
 
@@ -95,7 +89,6 @@ public class MainController {
         //добавляем пользователя в форму
         userForm.setUser(user);
 
-//        model.addAttribute("user", user);
         model.addAttribute("def_roles", defRoles);
         model.addAttribute("user_form", userForm);
         model.addAttribute("pathName", "/admin/saveUser");
@@ -105,17 +98,12 @@ public class MainController {
 
     @PostMapping(value = "saveUser")
     public String saveUser(
-//            @ModelAttribute("user") User user,
             @ModelAttribute("user_form") UserForm userForm,
             @RequestParam(value = "checkRoles", required = false) String[] checkRoles,
             Model model) {
 
         //Извлекаем пользователя из формы
         User user = userForm.getUser();
-        if (user.getId() == null && userForm.getNewPassword().isEmpty()){
-            return "redirect:/admin/updateInfo";
-        }
-        System.out.println("Заготовка обновленного юзера " + user);
 
         //Переводим наши флажки в новый Set ролей и обновляем их пользователю
         Set<Role> newSetRole = new HashSet<>();
@@ -125,21 +113,32 @@ public class MainController {
             }
             user.setRoles(newSetRole);
         }
-        System.out.println("-" + userForm.getNewPassword() + "-");
         if (!userForm.getNewPassword().isEmpty()){
-            System.out.println("Будет зашифрован новый пароль: " + userForm.getNewPassword());
+            System.out.println("Будет зашифрован новый пароль");
             user.setPassword(passwordEncoder.encode(userForm.getNewPassword()));
         } else {
             System.out.println("Будет сохранен старый пароль");
             user.setPassword(userService.getUser(user.getId()).getPassword());
         }
 
-        System.out.println(user);
-        userService.saveUser(user);
+        try {
+            userService.saveUser(user);
+        }catch (Exception e){
+            System.out.println("Ошибка сохранения пользователя. Проверьте данные.");
+            return "redirect:/admin/error/saveError";
+        }
 
         return "redirect:/admin";
-
     }
+
+    @GetMapping("error/{id}")
+    public String errorPage(@PathVariable() String id, Model model){
+
+        String err = Errors.valueOf(id).getMessage();
+        model.addAttribute("err", err);
+        return "error-page";
+    }
+
 
     @RequestMapping("deleteUser")
     public String deleteUser(@RequestParam("userId") Long id) {

@@ -26,41 +26,38 @@ public class UserController {
     }
 
     @GetMapping("")
-    public String userPage(@AuthenticationPrincipal User user, Model mdl, ModelMap model){
-
-        mdl.addAttribute(user);
-
+    public String userPage(@AuthenticationPrincipal User user, Model mdl){
+        mdl.addAttribute(userService.getUser(user.getId()));
         return "user-page";
     }
 
 
-
-    @GetMapping("updateInfo")
-    public String updateUserInfo(@AuthenticationPrincipal User user, Model model){
-        user = userService.getUser(user.getId());
-        String password = user.getPassword();
-        System.out.println("userPage pass: " + password);
-
-        UserForm userForm = new UserForm();
-        userForm.setUser(user);
-
-        model.addAttribute("user_form", userForm);
-        model.addAttribute("pathName", "/user/save");
-        model.addAttribute("password", password);
-        return "user-info1";
-    }
-
-    @PostMapping("save")
-    public String saveUser(@AuthenticationPrincipal User principal,
-                           @ModelAttribute("user_form") UserForm userForm){
-        User user = userService.getUser(principal.getId());
-        user.setName(userForm.getUser().getName());
-        user.setUsername(userForm.getUser().getUsername());
-        user.setPhone(userForm.getUser().getPhone());
-        user.setEmail(userForm.getUser().getEmail());
-
-        System.out.println("save: " + user.getPassword());
-        userService.saveUser(user);
-        return "redirect:/user";
-    }
+//    @GetMapping("updateInfo")
+//    public String updateUserInfo(@AuthenticationPrincipal User user, Model model){
+//        user = userService.getUser(user.getId());
+//        String password = user.getPassword();
+//        System.out.println("userPage pass: " + password);
+//
+//        UserForm userForm = new UserForm();
+//        userForm.setUser(user);
+//
+//        model.addAttribute("user_form", userForm);
+//        model.addAttribute("pathName", "/user/save");
+//        model.addAttribute("password", password);
+//        return "user-info1";
+//    }
+//
+//    @PostMapping("save")
+//    public String saveUser(@AuthenticationPrincipal User principal,
+//                           @ModelAttribute("user_form") UserForm userForm){
+//        User user = userService.getUser(principal.getId());
+//        user.setName(userForm.getUser().getName());
+//        user.setUsername(userForm.getUser().getUsername());
+//        user.setPhone(userForm.getUser().getPhone());
+//        user.setEmail(userForm.getUser().getEmail());
+//
+//        System.out.println("save: " + user.getPassword());
+//        userService.saveUser(user);
+//        return "redirect:/user";
+//    }
 }

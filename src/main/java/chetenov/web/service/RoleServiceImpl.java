@@ -1,8 +1,6 @@
 package chetenov.web.service;
 
 import chetenov.web.dao.RoleDao;
-import chetenov.web.exception.NotUniqRoleException;
-import chetenov.web.exception.NotUniqUsernameException;
 import chetenov.web.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class RoleServiceImpl implements RoleService{
 
     @Autowired
@@ -21,11 +18,11 @@ public class RoleServiceImpl implements RoleService{
     public List<Role> getAllRoles() {
         return roleDao.getAllRoles();
     }
+
     @Override
-    public void saveRole(Role role) throws RuntimeException{
-//        if (getRoleByName(role.getRole()) == null) {
+    @Transactional
+    public void saveRole(Role role) {
             roleDao.saveRole(role);
-//        } else throw new NotUniqRoleException("Role already exists!");
     }
 
     @Override
@@ -39,6 +36,7 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
+    @Transactional
     public void deleteRole(Long id) {
 
     }
