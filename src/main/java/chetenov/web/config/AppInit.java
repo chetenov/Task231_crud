@@ -1,10 +1,16 @@
 package chetenov.web.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 import javax.servlet.Filter;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 public class AppInit extends AbstractAnnotationConfigDispatcherServletInitializer {
+
 
     // Метод, указывающий на класс конфигурации
     @Override
@@ -17,7 +23,9 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
     @Override
     protected Class<?>[] getServletConfigClasses() {
         return new Class<?>[]{
-                WebConfig.class
+                WebConfig.class,
+                DatabaseConfig.class,
+                PersistenceJPAConfig.class
         };
     }
 
@@ -34,6 +42,17 @@ public class AppInit extends AbstractAnnotationConfigDispatcherServletInitialize
         filter.setEncoding("UTF-8");
         filter.setForceEncoding(true);
         return new Filter[]{filter};
+    }
+
+    @Override
+    public void onStartup(ServletContext aServletContext) throws ServletException {
+        super.onStartup(aServletContext);
+        registerHiddenFieldFilter(aServletContext);
+    }
+
+    private void registerHiddenFieldFilter(ServletContext aContext) {
+        aContext.addFilter("hiddenHttpMethodFilter",
+                new HiddenHttpMethodFilter()).addMappingForUrlPatterns(null ,true, "/*");
     }
 
 }

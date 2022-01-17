@@ -25,6 +25,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void saveUser(User user) {
+        em.persist(user);
+    }
+
+    @Override
+    public void updateUser(User user, Long id) {
         em.merge(user);
     }
 

@@ -46,17 +46,6 @@ public class User implements UserDetails {
     private boolean isEnabled;
 
 
-    @Transient
-    private Set<String> wantRoles = new HashSet<>();
-
-    public Set<String> getWantRoles() {
-        return wantRoles;
-    }
-
-    public void setWantRoles(Set<String> wantRoles) {
-        this.wantRoles = wantRoles;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -72,7 +61,6 @@ public class User implements UserDetails {
         this.isEnabled = true;
     }
 
-
     public User(String name, String username, String password) {
         this();
         this.name = name;
@@ -86,13 +74,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-//    public User(String name, String username, String password, Set<Role> roles) {
-//        this(name, username, password);
-//        this.roles = roles;
-//    }
-
-
-
     public User addRoleToUser(Role role){
         this.roles.add(role);
         return this;
@@ -102,7 +83,6 @@ public class User implements UserDetails {
         this.roles.addAll(Arrays.asList(role));
         return this;
     }
-
 
     public String getName() {
         return name;
@@ -195,7 +175,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
-
 
 
     public void setAccountNonExpired(boolean accountNonExpired) {

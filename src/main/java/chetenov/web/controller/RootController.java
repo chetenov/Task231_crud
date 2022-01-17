@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class RootController {
 
-    @Autowired
     private Util util;
-
+    private UserService userService;
 
     @Autowired
-    UserService userService;
-
+    public RootController(Util util, UserService userService) {
+        this.util = util;
+        this.userService = userService;
+    }
 
     @GetMapping("")
     public String rootBoot(){
-        System.out.println("rootBoot()");
         if (userService.getAllUsers().isEmpty()){
-            util.fillDataBase();
+            util.addUsersToDB();
         }
         return "redirect:/login";
     }

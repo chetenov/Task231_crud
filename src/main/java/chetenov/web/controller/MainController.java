@@ -1,149 +1,117 @@
 package chetenov.web.controller;
 
-import chetenov.web.model.Role;
 import chetenov.web.model.User;
-import chetenov.web.model.UserForm;
 import chetenov.web.service.RoleService;
-import chetenov.web.util.Errors;
+import chetenov.web.service.UserService;
 import chetenov.web.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import chetenov.web.service.UserService;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/users")
 public class MainController {
-
-
 
     private final UserService userService;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
+    private final Util util;
 
     @Autowired
-    private Util util;
-
-    private Set<String> defRoles = new HashSet<>();
-
-    @Autowired
-    public MainController(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public MainController(UserService userService, RoleService roleService, Util util) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
+        this.util = util;
         System.out.println("Main controller created....");
     }
 
-    @GetMapping("")
-    public String showAllUsers(Model model) {
+    //--------------------------------FORMS------------------------------------
 
-        List<User> allUsers = userService.getAllUsers();
-        if (allUsers == null || allUsers.isEmpty()) {
-            util.fillDataBase();
-            allUsers = userService.getAllUsers();
-        }
-        model.addAttribute("allUsers", allUsers);
+    @GetMapping("/new")
+    public String addUser(@ModelAttribute("user") User user) {
 
-        if (defRoles.isEmpty()) {
-            for (Role r : roleService.getAllRoles()) {
-                defRoles.add(r.getRole());
-            }
-        }
-
-        return "all-users";
+        return "user-info2";
     }
 
+    @GetMapping("/{id}/edit")
+    public String updateUser(@PathVariable(name = "id") Long id, Model model) {
 
-    @RequestMapping("updateInfo")
-    public String updateUser(@RequestParam(value = "userId", required = false) Long id, Model model) {
-
-        User user;
-        //если нет id, значит это создание нового пользователя
-        if (id == null || id == 0) {
-            user = new User();
-        } else {
-            user = userService.getUser(id);
-        }
-
-        //получаем Set текущих активных ролей пользователя для проставления флажков в форме
-        Set<String> activeRoles = user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet());
-
-        //добавляем в форму активные роли
-        UserForm userForm = new UserForm();
-        userForm.setActiveRoles(activeRoles);
-
-        //Заполняем мапу всеми ролями, проставляя флажки true, если роль активна
-        Map<String, Boolean> rolesMap = new HashMap<>();
-        for (String role : defRoles) {
-            rolesMap.put(role, activeRoles.contains(role));
-        }
-
-        //Добавляем мапу в форму
-        userForm.setCheckBoxes(rolesMap);
-
-        //добавляем пользователя в форму
-        userForm.setUser(user);
-
-        model.addAttribute("def_roles", defRoles);
-        model.addAttribute("user_form", userForm);
-        model.addAttribute("pathName", "/admin/saveUser");
-
-        return "user-info1";
+        model.addAttribute("user", userService.getUser(id));
+        return "user-info2";
     }
 
-    @PostMapping(value = "saveUser")
-    public String saveUser(
-            @ModelAttribute("user_form") UserForm userForm,
-            @RequestParam(value = "checkRoles", required = false) String[] checkRoles,
-            Model model) {
+    // -------------------------------CREATE-----------------------------------
 
-        //Извлекаем пользователя из формы
-        User user = userForm.getUser();
+    @PostMapping()
+    public String createUser(@ModelAttribute("user") User user,
+                             @RequestParam(value = "selectedRoles", required = false) Set<Long> selectedRoles,
+                             Model model) {
 
-        //Переводим наши флажки в новый Set ролей и обновляем их пользователю
-        Set<Role> newSetRole = new HashSet<>();
-        if (checkRoles != null) {
-            for (String r : checkRoles) {
-                newSetRole.add(roleService.getRoleByName(r));
+        if (!selectedRoles.isEmpty()) {
+            for (Long l : selectedRoles) {
+                user.addRoleToUser(roleService.getRole(l));
             }
-            user.setRoles(newSetRole);
         }
-        if (!userForm.getNewPassword().isEmpty()){
-            System.out.println("Будет зашифрован новый пароль");
-            user.setPassword(passwordEncoder.encode(userForm.getNewPassword()));
-        } else {
-            System.out.println("Будет сохранен старый пароль");
-            user.setPassword(userService.getUser(user.getId()).getPassword());
-        }
-
         try {
             userService.saveUser(user);
         }catch (Exception e){
-            System.out.println("Ошибка сохранения пользователя. Проверьте данные.");
-            return "redirect:/admin/error/saveError";
+            model.addAttribute("err", e.getMessage());
+            return "error-page";
         }
 
-        return "redirect:/admin";
+
+        return "redirect:/admin/users";
     }
 
-    @GetMapping("error/{id}")
-    public String errorPage(@PathVariable() String id, Model model){
+    // --------------------------------READ------------------------------------
 
-        String err = Errors.valueOf(id).getMessage();
-        model.addAttribute("err", err);
-        return "error-page";
+    @GetMapping()
+    public String readAllUsers(Model model) {
+
+        model.addAttribute("allUsers", userService.getAllUsers());
+        return "all-users";
     }
 
+    @GetMapping("/{id}")
+    public String readOneUser(@PathVariable(value = "id") Long id, Model model) {
 
-    @RequestMapping("deleteUser")
-    public String deleteUser(@RequestParam("userId") Long id) {
+        model.addAttribute("user", userService.getUser(id));
+        return "user-page";
+    }
+
+    // -------------------------------UPDATE-----------------------------------
+
+    @PatchMapping("/{id}")
+    public String updateUser(@PathVariable(value = "id") Long id,
+                             @ModelAttribute("user") User user,
+                             @RequestParam(value = "selectedRoles", required = false) Set<Long> selectedRoles,
+                             Model model) {
+
+        if (!selectedRoles.isEmpty()) {
+            for (Long r : selectedRoles) {
+                user.addRoleToUser(roleService.getRole(r));
+            }
+        }
+
+        try {
+            userService.updateUser(user, id);
+        }catch (Exception e){
+            model.addAttribute("err", e.getMessage());
+            return "error-page";
+        }
+
+        return "redirect:/admin/users";
+    }
+
+    // -------------------------------DELETE-----------------------------------
+
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable(value = "id") Long id) {
+
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return "redirect:/admin/users";
     }
 }
 

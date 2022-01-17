@@ -1,33 +1,40 @@
 package chetenov.web.util;
 
-import chetenov.web.model.*;
+import chetenov.web.model.Role;
+import chetenov.web.model.User;
 import chetenov.web.service.RoleService;
 import chetenov.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-@Service
+@Component
 public class Util {
-
 
     private final UserService userService;
     private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
-
+    Set<Role> defaultRoles;
 
     @Autowired
-    public Util(UserService userService, RoleService roleService, PasswordEncoder passwordEncoder) {
+    public Util(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    public void fillDataBase() {
-        System.out.println("UTIL start");
+    @PostConstruct
+    private void postConstruct(){
+        System.out.println("==============START OF POST CONSTRUCT===============");
+        addRolesToDB();
+        addUsersToDB();
+        System.out.println("--------------END OF POST CONSTRUCT----------------");
+    }
 
+    private void addRolesToDB(){
 
         List<Role> roleList = null;
         try {
@@ -41,31 +48,40 @@ public class Util {
             }
             System.out.println("Добавили роли...");
         }
-
-        Role userRole = roleService.getRoleByName(StandartRoles.ROLE_USER.name());
-        Role adminRole = roleService.getRoleByName(StandartRoles.ROLE_ADMIN.name());
-
-
-        userService.saveUsers(
-                new User("Admin", "a", passwordEncoder.encode("a"),
-                        "+79220005511", "aaa@mail.ru")
-                        .addRolesToUser(userRole, adminRole),
-
-                new User("Ivan", "ivan", passwordEncoder.encode("ivan"),
-                        "+79220005512", "ivan@mail.ru")
-                        .addRoleToUser(userRole),
-
-                new User("Maria", "maria", passwordEncoder.encode("maria"),
-                        "+79220005513", "maria@mail.ru")
-                        .addRoleToUser(userRole),
-
-                new User("Petr", "petr", passwordEncoder.encode("petr"),
-                        "+79220005514", "petr@mail.ru")
-                        .addRoleToUser(userRole));
-
-        System.out.println("UTIL finish");
-
     }
 
+    public void addUsersToDB(){
+
+        Role roleUser = roleService.getRoleByName(StandartRoles.ROLE_USER.name());
+        Role roleAdmin = roleService.getRoleByName(StandartRoles.ROLE_ADMIN.name());
+
+        userService.saveUsers(
+                new User("Admin", "a", "a",
+                        "+79220005511", "aaa@mail.ru")
+                        .addRolesToUser(roleUser, roleAdmin),
+
+                new User("Ivan", "ivan", "ivan",
+                        "+79220005512", "ivan@mail.ru")
+                        .addRoleToUser(roleUser),
+
+                new User("Maria", "maria", "maria",
+                        "+79220005513", "maria@mail.ru")
+                        .addRoleToUser(roleUser),
+
+                new User("Petr", "petr", "petr",
+                        "+79220005514", "petr@mail.ru")
+                        .addRoleToUser(roleUser));
+
+        System.out.println("Добавили стартовых юзеров");
+    }
+
+    @Bean
+    public Set<Role> getDefaultRoles() {
+        if (defaultRoles == null || defaultRoles.isEmpty()) {
+            defaultRoles = new HashSet<>(roleService.getAllRoles());
+        }
+        return defaultRoles;
+    }
 }
+
 

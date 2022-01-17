@@ -17,12 +17,12 @@ import org.thymeleaf.templatemode.TemplateMode;
 @ComponentScan("chetenov.web")
 public class WebConfig implements WebMvcConfigurer {
 
+
     private final ApplicationContext applicationContext;
 
     public WebConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
-
 
     @Bean
     public SpringResourceTemplateResolver templateResolver() {

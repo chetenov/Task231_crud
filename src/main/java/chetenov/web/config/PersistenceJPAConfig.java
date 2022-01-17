@@ -2,6 +2,8 @@ package chetenov.web.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -15,7 +17,19 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
+@PropertySource("classpath:db.properties")
 public class PersistenceJPAConfig {
+
+    private final DatabaseConfig databaseConfig;
+
+    public PersistenceJPAConfig(DatabaseConfig databaseConfig) {
+        this.databaseConfig = databaseConfig;
+    }
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer configurer(){
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -34,10 +48,10 @@ public class PersistenceJPAConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/crud231?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
-        dataSource.setUsername("admin");
-        dataSource.setPassword("password");
+        dataSource.setDriverClassName(databaseConfig.getDriverClassName());
+        dataSource.setUrl(databaseConfig.getUrl());
+        dataSource.setUsername(databaseConfig.getUsername());
+        dataSource.setPassword(databaseConfig.getPassword());
         return dataSource;
     }
 
@@ -55,8 +69,8 @@ public class PersistenceJPAConfig {
 
     Properties additionalProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+        properties.setProperty("hibernate.hbm2ddl.auto", databaseConfig.getHiberDDL());
+        properties.setProperty("hibernate.dialect", databaseConfig.getHiberDialect());
         return properties;
     }
 }

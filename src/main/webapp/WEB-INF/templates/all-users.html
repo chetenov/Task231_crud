@@ -47,14 +47,14 @@
             <td th:text="${user.phone}">Phone</td>
             <td>
                 <button
-                        th:href="@{admin/updateInfo(userId=${user.id})}"
+                        th:object="${user}"
+                        th:href="@{/admin/users/{id}/edit(id=${user.getId()})}"
                         onclick="window.location.href=(this.getAttribute('href'))">Изменить
                 </button>
 
-                <button
-                        th:href="@{admin/deleteUser(userId=${user.id})}"
-                        onclick="window.location.href=(this.getAttribute('href'))">Удалить
-                </button>
+                <form th:method="DELETE" th:action="@{/admin/users/{id}(id=${user.getId()})}">
+                        <input type="submit" value="Удалить">
+                </form>
 
             </td>
 
@@ -62,7 +62,7 @@
         </tbody>
     </table>
     <div class="mb-6 text-center">
-        <a href="admin/updateInfo">Добавить нового пользователя<br><br></a>
+        <a href="/admin/users/new">Добавить нового пользователя<br><br></a>
     </div>
 
 </div>
