@@ -19,8 +19,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = em.createQuery("select distinct u from User u left join fetch u.roles", User.class).getResultList();
-        return users;
+        return em.createQuery("select distinct u from User u left join fetch u.roles", User.class).getResultList();
     }
 
     @Override
@@ -36,8 +35,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUser(Long id) {
         TypedQuery<User> tq = em.createQuery("select distinct u from User u left join fetch u.roles WHERE u.id=:param", User.class);
-        User user = tq.setParameter("param", id).getSingleResult();
-        return user;
+        return tq.setParameter("param", id).getSingleResult();
     }
 
     @Override
@@ -47,10 +45,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUserByName(String name) {
+    public User getUserByUsername(String name) {
         TypedQuery<User> tq = em.createQuery("select distinct u from User u left join fetch u.roles WHERE u.username=:param", User.class);
-        User user = tq.setParameter("param", name).getSingleResult();
-        return user;
+        return tq.setParameter("param", name).getSingleResult();
     }
 
 }

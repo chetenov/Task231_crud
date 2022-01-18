@@ -9,11 +9,18 @@
     <title>Ошибка</title>
 </head>
 <body>
-<h1 th:text="${err}">Error</h1>
-<br>
-<form>
-    <input type="button" value="Назад!" onclick="history.back()">
-</form>
+<div class="container">
+
+    <div class="mt-5 text-center">
+        <h3 th:text="${err}">Error</h3>
+
+        <form>
+        <input type="button" value="Назад!" onclick="history.back()">
+    </form>
+    </div>
+
+</div>
+
 
 </body>
 </html>

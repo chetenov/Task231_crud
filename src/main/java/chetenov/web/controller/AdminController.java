@@ -13,14 +13,14 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/admin/users")
-public class MainController {
+public class AdminController {
 
     private final UserService userService;
     private final RoleService roleService;
     private final Util util;
 
     @Autowired
-    public MainController(UserService userService, RoleService roleService, Util util) {
+    public AdminController(UserService userService, RoleService roleService, Util util) {
         this.userService = userService;
         this.roleService = roleService;
         this.util = util;
@@ -49,7 +49,7 @@ public class MainController {
                              @RequestParam(value = "selectedRoles", required = false) Set<Long> selectedRoles,
                              Model model) {
 
-        if (!selectedRoles.isEmpty()) {
+        if (selectedRoles != null && !selectedRoles.isEmpty()) {
             for (Long l : selectedRoles) {
                 user.addRoleToUser(roleService.getRole(l));
             }
@@ -89,7 +89,7 @@ public class MainController {
                              @RequestParam(value = "selectedRoles", required = false) Set<Long> selectedRoles,
                              Model model) {
 
-        if (!selectedRoles.isEmpty()) {
+        if (selectedRoles != null && !selectedRoles.isEmpty()) {
             for (Long r : selectedRoles) {
                 user.addRoleToUser(roleService.getRole(r));
             }

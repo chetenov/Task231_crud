@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -27,8 +26,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = userDao.getAllUsers();
-        return users;
+        return userDao.getAllUsers();
     }
 
     @Override
@@ -37,14 +35,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         try {
             userDao.saveUser(user);
-        }catch (RuntimeException ignore){
-            throw new RuntimeException("Ошибка сохранения пользователя. Проверьте данные!");
+        } catch (RuntimeException ignore) {
+            throw new RuntimeException("Ошибка сохранения пользователя. Возможно, username '" + user.getUsername() +  "' занят :(");
         }
     }
 
     @Override
     @Transactional
     public void updateUser(User user, Long id) {
+        User daouser = null;
+        Long daouserId = -1L;
+
+        try {
+            daouser = userDao.getUserByUsername(user.getUsername());
+            daouserId = daouser.getId();
+        } catch (Exception ignore) {
+        }
+
+        if (daouser != null && daouserId != id) {
+            throw new RuntimeException("Ошибка обновления пользователя. Кажется, username '" + user.getUsername() +  "' занят :(");
+        }
+
         if (!user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
@@ -53,13 +64,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             } catch (Exception ignore) {
             }
         }
-
-        try {
-            userDao.updateUser(user, id);
-        }catch (Throwable ignore){
-            throw new RuntimeException("Ошибка обновления пользователя. Проверьте данные!");
-        }
-
+        userDao.updateUser(user, id);
     }
 
     @Override
@@ -81,6 +86,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userDao.getUserByName(username);
+        return userDao.getUserByUsername(username);
     }
 }
