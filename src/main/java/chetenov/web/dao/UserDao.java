@@ -1,6 +1,6 @@
 package chetenov.web.dao;
 
-import chetenov.web.entity.User;
+import chetenov.web.model.User;
 import java.util.List;
 
 public interface UserDao {
@@ -9,7 +9,12 @@ public interface UserDao {
 
     void saveUser(User user);
 
+    void updateUser(User user, Long id);
+
     User getUser(Long id);
 
     void deleteUser(Long id);
+
+    User getUserByUsername(String name);
+
 }

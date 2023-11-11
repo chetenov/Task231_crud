@@ -1,31 +1,41 @@
 package chetenov.web.dao;
 
-import chetenov.web.entity.User;
+import chetenov.web.model.User;
 import org.springframework.stereotype.Repository;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
 public class UserDaoImpl implements UserDao {
+
+    public UserDaoImpl() {
+    }
 
     @PersistenceContext
     private EntityManager em;
 
     @Override
     public List<User> getAllUsers() {
-        return em.createQuery("select u from User u", User.class)
-                .getResultList();
+        return em.createQuery("select distinct u from User u left join fetch u.roles", User.class).getResultList();
     }
 
     @Override
     public void saveUser(User user) {
+        em.persist(user);
+    }
+
+    @Override
+    public void updateUser(User user, Long id) {
         em.merge(user);
     }
 
     @Override
     public User getUser(Long id) {
-        return em.find(User.class, id);
+        TypedQuery<User> tq = em.createQuery("select distinct u from User u left join fetch u.roles WHERE u.id=:param", User.class);
+        return tq.setParameter("param", id).getSingleResult();
     }
 
     @Override
@@ -33,4 +43,11 @@ public class UserDaoImpl implements UserDao {
         User user = em.getReference(User.class, id);
         em.remove(user);
     }
+
+    @Override
+    public User getUserByUsername(String name) {
+        TypedQuery<User> tq = em.createQuery("select distinct u from User u left join fetch u.roles WHERE u.username=:param", User.class);
+        return tq.setParameter("param", name).getSingleResult();
+    }
+
 }

@@ -1,56 +1,60 @@
 package chetenov.web.controller;
 
-import chetenov.web.entity.User;
+import chetenov.web.model.User;
+import chetenov.web.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import chetenov.web.service.UserService;
-
-import java.util.List;
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserDetailsService userDetailsService) {
         this.userService = userService;
+        this.userDetailsService = userDetailsService;
     }
 
     @GetMapping("")
-    public String showAllUsers(Model model) {
-        List<User> allUsers = userService.getAllUsers();
-        model.addAttribute("allUsers", allUsers);
-        return "all-users-t";
-    }
-
-    @RequestMapping("/addNewUser")
-    public String addNewUser(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-        return "user-info";
+    public String userPage(@AuthenticationPrincipal User user, Model mdl){
+        mdl.addAttribute(userService.getUser(user.getId()));
+        return "user-page";
     }
 
 
-    @PostMapping(value = "/saveUser")
-    public String saveUser(@ModelAttribute("user") User user) {
-        userService.saveUser(user);
-        return "redirect:/";
-    }
-
-    @RequestMapping("/updateInfo")
-    public String updateUser(@RequestParam("userId") Long id, Model model) {
-        User user = userService.getUser(id);
-        model.addAttribute("user", user);
-        return "user-info";
-    }
-
-    @RequestMapping("deleteUser")
-    public String deleteUser(@RequestParam("userId") Long id) {
-        userService.deleteUser(id);
-        return "redirect:/";
-    }
+//    @GetMapping("updateInfo")
+//    public String updateUserInfo(@AuthenticationPrincipal User user, Model model){
+//        user = userService.getUser(user.getId());
+//        String password = user.getPassword();
+//        System.out.println("userPage pass: " + password);
+//
+//        UserForm userForm = new UserForm();
+//        userForm.setUser(user);
+//
+//        model.addAttribute("user_form", userForm);
+//        model.addAttribute("pathName", "/user/save");
+//        model.addAttribute("password", password);
+//        return "user-info1";
+//    }
+//
+//    @PostMapping("save")
+//    public String saveUser(@AuthenticationPrincipal User principal,
+//                           @ModelAttribute("user_form") UserForm userForm){
+//        User user = userService.getUser(principal.getId());
+//        user.setName(userForm.getUser().getName());
+//        user.setUsername(userForm.getUser().getUsername());
+//        user.setPhone(userForm.getUser().getPhone());
+//        user.setEmail(userForm.getUser().getEmail());
+//
+//        System.out.println("save: " + user.getPassword());
+//        userService.saveUser(user);
+//        return "redirect:/user";
+//    }
 }
-
